@@ -1,0 +1,27 @@
+[
+    {
+        "id": 1,
+        "type": "permanent",
+        "name": "Rahim Uddin",
+        "email": "rahim@taa.com",
+        "department": "Accounts",
+        "baseSalary": 40000
+    },
+    {
+        "id": 2,
+        "type": "contract",
+        "name": "Nusrat Jahan",
+        "email": "nusrat@taa.com",
+        "department": "IT",
+        "baseSalary": 35000
+    },
+    {
+        "id": 3,
+        "type": "intern",
+        "name": "Sabbir Hasan",
+        "email": "sabbir@taa.com",
+        "department": "HR",
+        "baseSalary": 12000
+    }
+
+]

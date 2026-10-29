@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "employeeId": 1,
+    "date": "2026-10-26",
+    "status": "present"
+  },
+  {
+    "id": 2,
+    "employeeId": 1,
+    "date": "2026-10-27",
+    "status": "late"
+  },
+  {
+    "id": 3,
+    "employeeId": 1,
+    "date": "2026-10-28",
+    "status": "present"
+  },
+  {
+    "id": 4,
+    "employeeId": 2,
+    "date": "2026-10-26",
+    "status": "present"
+  },
+  {
+    "id": 5,
+    "employeeId": 2,
+    "date": "2026-10-27",
+    "status": "present"
+  },
+  {
+    "id": 6,
+    "employeeId": 2,
+    "date": "2026-10-28",
+    "status": "halfday"
+  },
+  {
+    "id": 7,
+    "employeeId": 3,
+    "date": "2026-10-26",
+    "status": "absent"
+  },
+  {
+    "id": 8,
+    "employeeId": 3,
+    "date": "2026-10-27",
+    "status": "present"
+  },
+  {
+    "id": 9,
+    "employeeId": 3,
+    "date": "2026-10-28",
+    "status": "present"
+  }
+]
