@@ -134,3 +134,35 @@ input[type=date],input[type=month]{width:100%;padding:12px 14px;border:1.5px sol
 .mini.ok{background:var(--green)}
 .mini.no{background:var(--err)}
 .sec{margin:30px 0 12px;font-size:1.15rem}
+/* ---------- Step 4: polish ---------- */
+
+/* Card depth and hover */
+.stat,.panel{box-shadow:0 1px 3px rgba(18,33,26,.06);transition:box-shadow .2s,transform .2s}
+.stat:hover,.panel:hover{box-shadow:0 6px 18px rgba(18,33,26,.1);transform:translateY(-2px)}
+
+/* Table rows */
+.tbl tbody tr:nth-child(even){background:#fafcfb}
+.tbl tbody tr:hover{background:#f4f9f6}
+
+/* Empty state */
+.empty{padding:36px 16px;text-align:center;color:var(--muted)}
+
+/* Toast notification */
+.toast{position:fixed;right:20px;bottom:20px;z-index:50;padding:12px 18px;border-radius:10px;background:var(--green-dark);color:#fff;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .25s,transform .25s}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* Search bar above tables */
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.toolbar input{max-width:280px}
+
+/* Small action buttons and sidebar submenu highlight */
+.mini.edit{background:#24468a}
+.nav-sub.current{color:var(--green);font-weight:700}
+
+/* Simple bar chart for the dashboard */
+.bar{display:grid;grid-template-columns:110px 1fr 90px;gap:10px;align-items:center;padding:6px 0;font-size:.92rem}
+.bar .track{background:var(--green-bg);border-radius:7px}
+.bar i{display:block;height:14px;border-radius:7px;background:var(--green)}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion:reduce){.stat:hover,.panel:hover{transform:none}}
