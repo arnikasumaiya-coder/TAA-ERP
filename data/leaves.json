@@ -1,0 +1,4 @@
+[
+  {"id":1,"employeeId":1,"type":"annual","from":"2026-10-30","to":"2026-11-01","reason":"Family trip","status":"pending"},
+  {"id":2,"employeeId":2,"type":"sick","from":"2026-10-20","to":"2026-10-21","reason":"Fever","status":"approved"}
+]
