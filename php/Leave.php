@@ -38,6 +38,11 @@ class SickLeave extends LeaveRequest {
     public function maxDays(): int { return 14; }
     public function deductsBalance(): bool { return false; } // sick leave has its own allowance
 }
+class EmergencyLeave extends LeaveRequest {
+    public function type(): string { return 'emergency'; }
+    public function maxDays(): int { return 2; }   // short-notice leave, at most 2 days at a time
+    public function deductsBalance(): bool { return true; }
+}
 
 /* CREATOR: createLeave() is the factory method. */
 abstract class LeaveFactory {
@@ -56,9 +61,10 @@ abstract class LeaveFactory {
     }
     public static function forType(string $type): LeaveFactory {
         switch ($type) {
-            case 'annual': return new AnnualLeaveFactory();
-            case 'casual': return new CasualLeaveFactory();
-            case 'sick':   return new SickLeaveFactory();
+            case 'annual':    return new AnnualLeaveFactory();
+            case 'casual':    return new CasualLeaveFactory();
+            case 'sick':      return new SickLeaveFactory();
+            case 'emergency': return new EmergencyLeaveFactory();
         }
         throw new InvalidArgumentException('Unknown leave type.');
     }
@@ -66,3 +72,4 @@ abstract class LeaveFactory {
 class AnnualLeaveFactory extends LeaveFactory { protected function createLeave(array $d): LeaveRequest { return new AnnualLeave($d); } }
 class CasualLeaveFactory extends LeaveFactory { protected function createLeave(array $d): LeaveRequest { return new CasualLeave($d); } }
 class SickLeaveFactory extends LeaveFactory   { protected function createLeave(array $d): LeaveRequest { return new SickLeave($d); } }
+class EmergencyLeaveFactory extends LeaveFactory { protected function createLeave(array $d): LeaveRequest { return new EmergencyLeave($d); } }

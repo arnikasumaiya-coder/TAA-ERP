@@ -22,6 +22,21 @@
         "email": "sabbir@taa.com",
         "department": "HR",
         "baseSalary": 12000
+    },
+    {
+        "id": 4,
+        "type": "contract",
+        "name": "Arnika",
+        "email": "arnika12@gamil.com",
+        "department": "Finance",
+        "baseSalary": "25000"
+    },
+    {
+        "id": 5,
+        "type": "intern",
+        "name": "Amit",
+        "email": "amit@gmail.com",
+        "department": "it",
+        "baseSalary": "45000"
     }
-
 ]
