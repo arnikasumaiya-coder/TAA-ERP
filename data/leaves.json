@@ -1,4 +1,38 @@
 [
-  {"id":1,"employeeId":1,"type":"annual","from":"2026-10-30","to":"2026-11-01","reason":"Family trip","status":"pending"},
-  {"id":2,"employeeId":2,"type":"sick","from":"2026-10-20","to":"2026-10-21","reason":"Fever","status":"approved"}
+    {
+        "id": 1,
+        "employeeId": 1,
+        "type": "annual",
+        "from": "2026-10-30",
+        "to": "2026-11-01",
+        "reason": "Family trip",
+        "status": "pending"
+    },
+    {
+        "id": 2,
+        "employeeId": 2,
+        "type": "sick",
+        "from": "2026-10-20",
+        "to": "2026-10-21",
+        "reason": "Fever",
+        "status": "approved"
+    },
+    {
+        "id": 3,
+        "employeeId": 4,
+        "type": "casual",
+        "from": "2026-11-12",
+        "to": "2026-11-13",
+        "reason": "Home change",
+        "status": "approved"
+    },
+    {
+        "id": 4,
+        "employeeId": 5,
+        "type": "sick",
+        "from": "2026-11-02",
+        "to": "2026-11-03",
+        "reason": "fever",
+        "status": "approved"
+    }
 ]
