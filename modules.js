@@ -12,6 +12,12 @@
   function today() { return new Date().toISOString().slice(0, 10); }
 
   function employeeOptions(selId) {
+    var u = T.user();
+    // Line managers and employees act only for themselves (Step 8)
+    if (u && (u.role === "manager" || u.role === "employee") && u.employeeId) {
+      $(selId).innerHTML = "<option value=\"" + u.employeeId + "\">" + T.esc(u.name) + " (you)</option>";
+      return;
+    }
     T.call("list").then(function (rows) {
       $(selId).innerHTML = rows.map(function (e) { return "<option value=\"" + e.id + "\">" + T.esc(e.name) + "</option>"; }).join("");
     }).catch(function () {});
@@ -82,6 +88,38 @@
   T.loaders.attDaily = loadDaily;
   T.loaders.attMonthly = loadMonthly;
 
+  /* ----- Step 8: upload my attendance ----- */
+  function loadMyRecords() {
+    T.call("attList").then(function (rows) {
+      fill("upBody", rows.map(function (r) {
+        return "<tr><td>" + r.date + "</td><td>" + tag(r.status) + "</td><td class=\"num\">" + r.workDays + "</td></tr>";
+      }).join(""), 3, "No records yet.");
+    }).catch(function (e) { fail("upBody", 3, e); });
+  }
+  $("upForm").addEventListener("submit", function (e) {
+    e.preventDefault(); msg("upMsg", "", "");
+    var f = $("upFile").files[0];
+    if (!f) { msg("upMsg", "err", "Choose an .xlsx or .csv file first."); return; }
+    var fd = new FormData();
+    fd.append("file", f);
+    fetch("php/api.php?action=attUpload", { method: "POST", body: fd })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error);
+        var d = j.data;
+        var html = "<div class=\"notice ok\">Saved " + d.saved + " new day(s), updated " + d.updated + " day(s).</div>";
+        if (d.skipped.length) {
+          html += "<div class=\"notice warn\" style=\"margin-top:8px\">Skipped " + d.skipped.length + " row(s):<br>" +
+            d.skipped.map(function (s) { return "Row " + s.row + ": " + T.esc(s.reason); }).join("<br>") + "</div>";
+        }
+        $("upResult").innerHTML = html;
+        $("upForm").reset();
+        loadMyRecords();
+      })
+      .catch(function (err) { msg("upMsg", "err", T.errText(err)); });
+  });
+  T.loaders.attUpload = loadMyRecords;
+
   /* ----- Step 4: leave types & holiday calendar ----- */
   function loadLeaveTypes() {
     T.call("leaveTypes").then(function (rows) {
@@ -101,6 +139,9 @@
 
   /* ----- Step 5: notices ----- */
   function loadNotices() {
+    var u = T.user();
+    var formCard = $("noticeFormCard");
+    if (formCard && u && u.role !== "admin" && u.role !== "hr") formCard.style.display = "none";
     T.call("notices").then(function (rows) {
       $("ntList").innerHTML = rows.map(function (n) {
         return "<div class=\"card narrow\" style=\"margin-bottom:14px\"><div class=\"card-pad\"><b>" + T.esc(n.title) + "</b><div class=\"small muted\" style=\"margin:2px 0 6px\">" + n.date + "</div><div>" + T.esc(n.body) + "</div></div></div>";
@@ -127,6 +168,9 @@
 
   /* ----- Step 5: departments ----- */
   function loadDepartments() {
+    var u = T.user();
+    var formCard = $("deptFormCard");
+    if (formCard && u && u.role !== "admin" && u.role !== "hr") formCard.style.display = "none";
     T.call("departments").then(function (rows) {
       fill("dpBody", rows.map(function (r) {
         return "<tr><td>" + T.esc(r.name) + "</td><td class=\"num\">" + r.employees + "</td></tr>";

@@ -20,7 +20,7 @@
         <p>Manage employees, attendance, leave and salaries from a single workspace.</p>
         <ul><li><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>Employee records by type: permanent, contract and intern</li><li><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>Leave requests, approval and yearly balances</li><li><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>Daily and monthly attendance</li><li><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>Monthly payroll summary</li></ul>
       </div>
-      <div class="small" style="opacity:.7;position:relative;z-index:1">Early preview &ndash; version 0.4</div>
+      <div class="small" style="opacity:.7;position:relative;z-index:1">Early preview &ndash; version 0.5.3</div>
     </div>
     <div class="login-form">
       <div class="login-card">
@@ -31,9 +31,9 @@
           <div class="field"><label class="lbl" for="lEmail">Email</label><input type="email" id="lEmail" autocomplete="username" placeholder="you@company.com"></div>
           <div class="field" style="margin-bottom:20px"><label class="lbl" for="lPass">Password</label><input type="password" id="lPass" autocomplete="current-password" placeholder="Your password"></div>
           <button class="btn primary block" type="submit">Sign in</button>
-          <button class="btn block" type="button" id="fillDemo">Use demo account</button>
+          <button class="btn block" type="button" id="fillDemo">Fill Super Admin account</button>
         </form>
-        <div class="demo-box"><b>Demo account</b><br>Email: <code>demo@taa.com</code> &nbsp; Password: <code>demo123</code></div>
+        <div class="demo-box"><b>Sign-in accounts (one per role)</b><br>Super Admin: <code>admin@taa.com</code> / <code>admin123</code><br>HR Manager: <code>hr@taa.com</code> / <code>hr123</code><br>Payroll: <code>payroll@taa.com</code> / <code>payroll123</code><br>Line Manager: <code>rahim@taa.com</code> / <code>manager123</code><br>Employee: <code>nusrat@taa.com</code> / <code>emp123</code><br>Employee: <code>sabbir@taa.com</code> / <code>emp123</code></div>
         <p class="auth-switch">New to TAA? <button class="linkbtn" type="button" data-go="register">Create an account</button></p>
       </div>
     </div>
@@ -50,7 +50,7 @@
         <p>Create an account to start managing your team and payroll.</p>
         <ul><li><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>Employee records by type: permanent, contract and intern</li><li><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>Leave requests, approval and yearly balances</li><li><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>Daily and monthly attendance</li><li><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>Monthly payroll summary</li></ul>
       </div>
-      <div class="small" style="opacity:.7;position:relative;z-index:1">Early preview &ndash; version 0.4</div>
+      <div class="small" style="opacity:.7;position:relative;z-index:1">Early preview &ndash; version 0.5.3</div>
     </div>
     <div class="login-form">
       <div class="login-card">
@@ -107,6 +107,7 @@
       <div class="nav-children">
       <button class="nav-item" type="button" data-page="attDaily" data-label="daily attendance"><span>Daily attendance</span></button>
       <button class="nav-item" type="button" data-page="attMonthly" data-label="monthly attendance"><span>Monthly attendance</span></button>
+      <button class="nav-item" type="button" data-page="attUpload" data-label="upload attendance"><span>Upload attendance</span></button>
       <button class="nav-item" type="button" data-label="shift schedule"><span>Shift schedule</span></button>
       <button class="nav-item" type="button" data-label="overtime"><span>Overtime</span></button>
       </div></div>
@@ -171,8 +172,8 @@
       <button class="icon-btn" id="fullBtn" type="button" title="Full screen"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
       <div style="position:relative">
         <div class="user-chip" id="userChip" tabindex="0">
-          <div class="avatar">D</div>
-          <div class="uname"><div style="font-weight:500;line-height:1.2">Demo User</div><div class="small muted" style="line-height:1.2">demo@taa.com</div></div>
+          <div class="avatar" id="chipAvatar">D</div>
+          <div class="uname"><div style="font-weight:500;line-height:1.2" id="chipName">Demo User</div><div class="small muted" style="line-height:1.2" id="chipEmail">demo@taa.com</div></div>
         </div>
         <div class="menu-pop hide" id="userPop"><button type="button" id="logoutBtn"><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sign out</button></div>
       </div>
@@ -191,9 +192,9 @@
             <button class="btn" type="button" data-page="payroll"><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Payroll</button>
           </div>
         </div>
-        <div class="notice warn spaced"><b>Step 7.</b> Employee, Leave (with Emergency leave, leave types and the holiday calendar), Attendance, Payroll with payslips, Notices, Departments, Reports and Recruitment (job openings, candidates, interviews and offer letters) now work with a PHP backend. Other menu items are still sample.</div>
+        <div class="notice warn spaced"><b>Step 8.</b> Role-based sign-in is on: Super Admin, HR Manager, Payroll, Line Manager and Employee each see — and can change — only their own part of the system, enforced by the PHP backend. Employees can also upload their own attendance from an Excel sheet. Other menu items are still sample.</div>
 
-        <div class="kpis">
+        <div class="kpis" id="orgKpis">
           <div class="kpi"><div class="k-ic"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></div><div class="v" id="stTotal">248</div><div class="l">Total employees</div></div>
           <div class="kpi"><div class="k-ic"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg></div><div class="v" id="stPresent">231</div><div class="l">Present today</div></div>
           <div class="kpi t-info"><div class="k-ic"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div><div class="v" id="stOnLeave">9</div><div class="l">On leave</div></div>
@@ -201,7 +202,7 @@
           <div class="kpi t-info"><div class="k-ic"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg></div><div class="v" id="stPayroll">-</div><div class="l">Monthly payroll cost</div></div>
         </div>
 
-        <div class="dash-grid">
+        <div class="dash-grid" id="orgCards">
           <div class="card c6">
             <div class="card-head"><h3 class="grow">Human resources</h3></div>
             <div class="card-pad">
@@ -219,6 +220,7 @@
             </div>
           </div>
         </div>
+        <div id="myDash" hidden></div>
       </div>
 
       <!-- ===== Apply for leave ===== -->
@@ -276,6 +278,22 @@
         </div>
       </div>
 
+      <!-- ===== Upload attendance (Step 8) ===== -->
+      <div class="page" id="page-attUpload" data-title="Upload attendance" hidden>
+        <div class="page-head"><div class="grow"><h1>Upload attendance</h1><div class="sub">HR cannot always mark everyone's attendance by hand — so upload your own days from a sheet instead.</div></div></div>
+        <div class="notice spaced">Prepare a file with two columns, <b>Date</b> and <b>Status</b> (Present, Late, Half Day or Absent) — or start from the <a href="attendance-template.csv" download>sample template (CSV)</a>. You can fill the sheet in Excel and upload it as .xlsx or .csv — both work. The rows are recorded for <b>your own account only</b>. A date that already has a record is updated with the new status.</div>
+        <div class="card narrow"><div class="card-pad">
+          <div class="notice bad hide form-msg" id="upMsg"></div>
+          <form id="upForm" class="form-grid" novalidate>
+            <div class="field full"><label class="lbl" for="upFile">Attendance file (.xlsx or .csv)</label><input type="file" id="upFile" accept=".xlsx,.csv"></div>
+            <div class="field full"><button class="btn primary" type="submit">Upload my attendance</button></div>
+          </form>
+          <div id="upResult" style="margin-top:12px"></div>
+        </div></div>
+        <div class="page-head sec"><div class="grow"><h2>My recent records</h2></div></div>
+        <div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Status</th><th class="num">Work days</th></tr></thead><tbody id="upBody"></tbody></table></div></div>
+      </div>
+
       <!-- ===== Employee list ===== -->
       <div class="page" id="page-employees" data-title="Employee list" hidden>
         <div class="page-head"><div class="grow"><h1>Employee list</h1><div class="sub">Every row is rebuilt by the Employee Factory, so each type shows its own leave days and salary.</div></div></div>
@@ -309,7 +327,7 @@
       <!-- ===== Notices ===== -->
       <div class="page" id="page-notices" data-title="Notices" hidden>
         <div class="page-head"><div class="grow"><h1>Notices</h1><div class="sub">Company announcements for everyone.</div></div></div>
-        <div class="card narrow"><div class="card-pad">
+        <div class="card narrow" id="noticeFormCard"><div class="card-pad">
           <div class="notice bad hide form-msg" id="ntMsg"></div>
           <form id="noticeForm" class="form-grid" novalidate>
             <div class="field full"><label class="lbl" for="ntTitle">Title</label><input type="text" id="ntTitle"></div>
@@ -345,7 +363,7 @@
       <!-- ===== Departments ===== -->
       <div class="page" id="page-departments" data-title="Departments" hidden>
         <div class="page-head"><div class="grow"><h1>Departments</h1><div class="sub">Departments with their current headcount. New departments appear in the Add employee form.</div></div></div>
-        <div class="card narrow"><div class="card-pad">
+        <div class="card narrow" id="deptFormCard"><div class="card-pad">
           <div class="notice bad hide form-msg" id="dpMsg"></div>
           <form id="deptForm" class="form-grid" novalidate>
             <div class="field"><label class="lbl" for="dpName">Department name</label><input type="text" id="dpName"></div>
