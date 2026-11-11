@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "name": "Super Admin",
+        "email": "admin@taa.com",
+        "passwordHash": "$2y$10$0KyuOOJmatZyNe7Y7RD3bukYu7V\/q.n0E7VBurL2wJFezzj6wv\/uO",
+        "role": "admin",
+        "employeeId": null
+    },
+    {
+        "id": 2,
+        "name": "HR Manager",
+        "email": "hr@taa.com",
+        "passwordHash": "$2y$10$\/vbLKwtk5\/4G7tSAO\/L6Wu\/M7WzxukaHa1ABooLysvlhEUwnbDpse",
+        "role": "hr",
+        "employeeId": null
+    },
+    {
+        "id": 3,
+        "name": "Payroll Officer",
+        "email": "payroll@taa.com",
+        "passwordHash": "$2y$10$9wjpSOZqjJmfBR3pjOqrYeHe.ljcjcUOxKUvD6V8zoZCvaoxMpSOG",
+        "role": "payroll",
+        "employeeId": null
+    },
+    {
+        "id": 4,
+        "name": "Rahim Uddin",
+        "email": "rahim@taa.com",
+        "passwordHash": "$2y$10$F5dr3a3eEdBUJT3NaWoGZOYjE3cgubBEchR6WR2FGf9aA.c6VNQAa",
+        "role": "manager",
+        "employeeId": 1
+    },
+    {
+        "id": 5,
+        "name": "Nusrat Jahan",
+        "email": "nusrat@taa.com",
+        "passwordHash": "$2y$10$MsB5Q3.Mza7Kg1AfNHWELeEIg2hJhMDITX7C3o4D8KB0gCQYfTEhC",
+        "role": "employee",
+        "employeeId": 2
+    },
+    {
+        "id": 6,
+        "name": "Sabbir Hasan",
+        "email": "sabbir@taa.com",
+        "passwordHash": "$2y$10$sqidj1DYUXB.9csOsFJBy.Wk7F49jiT2hZfQsI7U.W1PsvdLhH\/2G",
+        "role": "employee",
+        "employeeId": 3
+    }
+]

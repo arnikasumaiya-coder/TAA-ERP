@@ -35,9 +35,11 @@ class HRFacade {
     private $employeeRepo; private $leaveRepo; private $attRepo;
     private $holidayRepo; private $noticeRepo; private $deptRepo;
     private $jobRepo; private $candRepo; private $intRepo; private $offerRepo;
+    private $userRepo;
 
     public function __construct(string $dir) {
         $this->employeeRepo = new JsonRepository($dir . '/employees.json');
+        $this->userRepo = new JsonRepository($dir . '/users.json');
         $this->leaveRepo = new JsonRepository($dir . '/leaves.json');
         $this->attRepo = new JsonRepository($dir . '/attendance.json');
         $this->holidayRepo = new JsonRepository($dir . '/holidays.json');
@@ -77,6 +79,19 @@ class HRFacade {
         return $used;
     }
 
+    /* ---- Step 8: user accounts and roles ----
+       Passwords are stored hashed in data/users.json. api.php keeps the
+       signed-in user in the PHP session and asks this method to verify. */
+    public function authenticate(string $email, string $password): ?array {
+        foreach ($this->userRepo->all() as $u) {
+            if (strtolower((string)$u['email']) === strtolower($email) && password_verify($password, (string)$u['passwordHash'])) {
+                return ['id' => (int)$u['id'], 'name' => $u['name'], 'email' => $u['email'],
+                        'role' => $u['role'], 'employeeId' => isset($u['employeeId']) && $u['employeeId'] !== null ? (int)$u['employeeId'] : null];
+            }
+        }
+        return null;
+    }
+
     /* ---- employees ---- */
     public function addEmployee(array $in): array {
         $type = strtolower(trim($in['type'] ?? ''));
@@ -109,13 +124,17 @@ class HRFacade {
         $this->leaveRepo->add($row);
         return $leave->toArray();
     }
-    public function listLeaves(): array {
+    public function listLeaves(?int $onlyEmployeeId = null): array {
         $map = $this->employeeMap();
+        $leaves = $this->leaves();
+        if ($onlyEmployeeId !== null) {
+            $leaves = array_values(array_filter($leaves, function ($l) use ($onlyEmployeeId) { return $l->employeeId === $onlyEmployeeId; }));
+        }
         return array_map(function ($l) use ($map) {
             $a = $l->toArray();
             $a['employeeName'] = isset($map[$l->employeeId]) ? $map[$l->employeeId]->name : 'Unknown';
             return $a;
-        }, array_reverse($this->leaves()));
+        }, array_reverse($leaves));
     }
     public function decideLeave(int $id, string $status): array {
         if (!in_array($status, ['approved', 'rejected'], true)) throw new InvalidArgumentException('Invalid decision.');
@@ -136,9 +155,10 @@ class HRFacade {
         }
         throw new InvalidArgumentException('Leave request not found.');
     }
-    public function leaveBalance(): array {
+    public function leaveBalance(?int $onlyEmployeeId = null): array {
         $out = [];
         foreach ($this->employees() as $e) {
+            if ($onlyEmployeeId !== null && (int)$e->id !== $onlyEmployeeId) continue;
             $used = $this->usedDays((int)$e->id);
             $out[] = ['name' => $e->name, 'type' => $e->type(), 'entitled' => $e->leaveDays(),
                       'used' => $used, 'remaining' => $e->leaveDays() - $used];
@@ -161,21 +181,26 @@ class HRFacade {
         $this->attRepo->add($row);
         return $record->toArray();
     }
-    public function listAttendance(): array {
+    public function listAttendance(?int $onlyEmployeeId = null): array {
         $map = $this->employeeMap();
+        $records = $this->attendance();
+        if ($onlyEmployeeId !== null) {
+            $records = array_values(array_filter($records, function ($a) use ($onlyEmployeeId) { return $a->employeeId === $onlyEmployeeId; }));
+        }
         $rows = array_map(function ($a) use ($map) {
             $r = $a->toArray();
             $r['employeeName'] = isset($map[$a->employeeId]) ? $map[$a->employeeId]->name : 'Unknown';
             return $r;
-        }, $this->attendance());
+        }, $records);
         usort($rows, function ($x, $y) { return strcmp($y['date'], $x['date']) ?: $y['id'] - $x['id']; });
         return array_slice($rows, 0, 30);
     }
-    public function monthlyAttendance(string $month): array {
+    public function monthlyAttendance(string $month, ?int $onlyEmployeeId = null): array {
         if (!preg_match('/^\d{4}-\d{2}$/', $month)) throw new InvalidArgumentException('Choose a month.');
         $out = [];
         foreach ($this->employees() as $e) {
-            $out[(int)$e->id] = ['name' => $e->name, 'present' => 0, 'late' => 0, 'halfday' => 0, 'absent' => 0, 'workDays' => 0];
+            if ($onlyEmployeeId !== null && (int)$e->id !== $onlyEmployeeId) continue;
+            $out[(int)$e->id] = ['employeeId' => (int)$e->id, 'name' => $e->name, 'present' => 0, 'late' => 0, 'halfday' => 0, 'absent' => 0, 'workDays' => 0];
         }
         foreach ($this->attendance() as $a) {
             if (strpos($a->date, $month) !== 0 || !isset($out[$a->employeeId])) continue;
@@ -183,6 +208,43 @@ class HRFacade {
             $out[$a->employeeId]['workDays'] += $a->workDays();
         }
         return array_values($out);
+    }
+
+    /* ---- Step 8: an employee uploads their own attendance sheet ----
+       Rows arrive already split into date/status text by AttendanceImport.
+       A date that already has a record is updated (the sheet is the
+       employee's correction), a new date is inserted. Bad rows are reported
+       back one by one instead of failing the whole file. */
+    public function importAttendance(int $employeeId, array $rows): array {
+        $emp = $this->findEmployee($employeeId);
+        $all = $this->attRepo->all();
+        $index = [];
+        foreach ($all as $i => $r) {
+            if ((int)$r['employeeId'] === (int)$emp->id) $index[$r['date']] = $i;
+        }
+        $nextId = $this->attRepo->nextId();
+        $saved = 0; $updated = 0; $skipped = [];
+        foreach ($rows as $n => $row) {
+            $line = isset($row['row']) ? (int)$row['row'] : $n + 2;
+            try {
+                $date = parseYmd(trim((string)($row['date'] ?? '')))->format('Y-m-d');
+                $status = strtolower(trim((string)($row['status'] ?? '')));
+                AttendanceFactory::forStatus($status);
+            } catch (Throwable $e) {
+                $skipped[] = ['row' => $line, 'reason' => $e->getMessage()];
+                continue;
+            }
+            if (isset($index[$date])) {
+                $all[$index[$date]]['status'] = $status;
+                $updated++;
+            } else {
+                $all[] = ['id' => $nextId++, 'employeeId' => (int)$emp->id, 'date' => $date, 'status' => $status];
+                $index[$date] = count($all) - 1;
+                $saved++;
+            }
+        }
+        $this->attRepo->saveAll($all);
+        return ['saved' => $saved, 'updated' => $updated, 'skipped' => $skipped];
     }
 
     /* ---- dashboard and payroll ---- */
@@ -267,10 +329,11 @@ class HRFacade {
     }
 
     /* ---- Step 5: payslips ---- */
-    public function payslips(string $month): array {
+    public function payslips(string $month, ?int $onlyEmployeeId = null): array {
         if (!preg_match('/^\d{4}-\d{2}$/', $month)) throw new InvalidArgumentException('Choose a month.');
         $rows = []; $totals = ['gross' => 0.0, 'pf' => 0.0, 'net' => 0.0];
         foreach ($this->employees() as $e) {
+            if ($onlyEmployeeId !== null && (int)$e->id !== $onlyEmployeeId) continue;
             $b = $this->payslipFor($e);
             $rows[] = ['id' => $e->id, 'name' => $e->name, 'type' => $e->type()] + $b;
             $totals['gross'] += $b['gross']; $totals['pf'] += $b['pf']; $totals['net'] += $b['net'];

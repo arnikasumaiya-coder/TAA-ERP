@@ -64,5 +64,17 @@
         "employeeId": 5,
         "date": "2026-11-01",
         "status": "present"
+    },
+    {
+        "id": 12,
+        "employeeId": 3,
+        "date": "2026-11-09",
+        "status": "present"
+    },
+    {
+        "id": 13,
+        "employeeId": 2,
+        "date": "2026-11-11",
+        "status": "present"
     }
 ]
