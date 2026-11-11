@@ -1,5 +1,5 @@
 (function () {
-  var DEMO = { email: "demo@taa.com", pass: "demo123" };
+  var ADMIN = { email: "admin@taa.com", pass: "admin123" };
   var views = ["login", "register", "dashboard"];
 
   function $(id) { return document.getElementById(id); }
@@ -34,7 +34,10 @@
     else if (document.exitFullscreen) document.exitFullscreen();
   });
 
-  /* ---------- Login / Register ---------- */
+  /* ---------- Login / Register (Step 8: real accounts, checked by the PHP backend) ---------- */
+  window.TAA_ENTER = function () { show("dashboard"); };
+  window.TAA_EXIT = function () { show("login"); };
+
   document.querySelectorAll("[data-go]").forEach(function (b) {
     b.addEventListener("click", function () {
       msg("loginMsg", "", ""); msg("regMsg", "", "");
@@ -43,8 +46,8 @@
   });
 
   $("fillDemo").addEventListener("click", function () {
-    $("lEmail").value = DEMO.email;
-    $("lPass").value = DEMO.pass;
+    $("lEmail").value = ADMIN.email;
+    $("lPass").value = ADMIN.pass;
     msg("loginMsg", "", "");
   });
 
@@ -53,25 +56,24 @@
     var email = $("lEmail").value.trim().toLowerCase();
     var pass = $("lPass").value;
     if (!email || !pass) { msg("loginMsg", "err", "Enter your email and password."); return; }
-    if (email === DEMO.email && pass === DEMO.pass) {
+    fetch("php/api.php?action=login", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, password: pass })
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.ok) { msg("loginMsg", "err", j.error || "Sign-in failed."); return; }
+      try { sessionStorage.setItem("taa_user", JSON.stringify(j.data)); } catch (err) {}
       msg("loginMsg", "", "");
       $("loginForm").reset();
       show("dashboard");
-    } else {
-      msg("loginMsg", "err", "Email or password is incorrect. Use the demo account below.");
-    }
+      if (window.TAA && window.TAA.onLogin) window.TAA.onLogin(j.data);
+    }).catch(function () {
+      msg("loginMsg", "err", "Cannot reach the PHP server. Start it with: php -S localhost:8000");
+    });
   });
 
   $("regForm").addEventListener("submit", function (e) {
     e.preventDefault();
-    var f = ["rName", "rCompany", "rEmail", "rPass", "rPass2"].map(function (i) { return $(i).value.trim(); });
-    if (f.some(function (v) { return !v; })) { msg("regMsg", "err", "Fill in all fields."); return; }
-    if (f[3].length < 6) { msg("regMsg", "err", "Password must be at least 6 characters."); return; }
-    if (f[3] !== f[4]) { msg("regMsg", "err", "Passwords do not match."); return; }
-    $("regForm").reset();
-    msg("regMsg", "", "");
-    show("login");
-    msg("loginMsg", "ok", "Account request received. This preview does not save data, so sign in with the demo account.");
+    msg("regMsg", "err", "Self-registration is off. Accounts are created by the Super Admin — please sign in with the account provided to you.");
   });
 
   /* ---------- Sidebar dropdowns (one open at a time) ---------- */
@@ -123,6 +125,8 @@
     setMenu(false);
     closeGroups();
     msg("loginMsg", "", "");
+    try { sessionStorage.removeItem("taa_user"); } catch (e) {}
+    fetch("php/api.php?action=logout", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }).catch(function () {});
     show("login");
   });
 })();
